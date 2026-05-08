@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="Manual Equipe"/>
 <meta name="application-name" content="Manual Equipe"/>
-<link rel="manifest" href="./manifest.json?v=12">
+<link rel="manifest" href="./manifest.json?v=13">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32x32.png?v=12">
 <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192x192.png?v=11"/>
 <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180x180.png?v=12">
@@ -853,11 +853,100 @@ main{
   .splash-card{width:min(86vw,330px);padding:6px 8px 10px;border-radius:0;background:transparent;border:none;box-shadow:none}
 }
 
+
+
+/* ==========================================================
+   FIX DEFINITIVO — Rolagem vertical real no mobile/PWA Android
+   Mantém a estrutura PWA que já instalou funcionando.
+   ========================================================== */
+@media (max-width:720px){
+  html,
+  body{
+    width:100%!important;
+    max-width:100%!important;
+    height:100dvh!important;
+    min-height:100dvh!important;
+    margin:0!important;
+    overflow:hidden!important;
+    overscroll-behavior:none!important;
+  }
+  body{
+    display:flex!important;
+    flex-direction:column!important;
+  }
+  header{
+    flex:0 0 auto!important;
+  }
+  .container{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    height:auto!important;
+    max-height:none!important;
+    display:flex!important;
+    flex-direction:column!important;
+    overflow:hidden!important;
+    padding:10px 12px 0!important;
+    gap:10px!important;
+  }
+  nav{
+    position:relative!important;
+    top:auto!important;
+    flex:0 0 auto!important;
+    height:74px!important;
+    min-height:74px!important;
+    max-height:74px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+  }
+  main{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    height:auto!important;
+    max-height:none!important;
+    overflow-y:scroll!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior-y:contain!important;
+    scrollbar-width:thin!important;
+    padding:18px 14px calc(130px + env(safe-area-inset-bottom,0px))!important;
+    border-radius:22px 22px 0 0!important;
+  }
+  main::-webkit-scrollbar{
+    width:8px!important;
+  }
+  main::-webkit-scrollbar-track{
+    background:rgba(34,30,26,.08)!important;
+    border-radius:999px!important;
+  }
+  main::-webkit-scrollbar-thumb{
+    background:linear-gradient(180deg,rgba(216,145,82,.90),rgba(154,90,46,.85))!important;
+    border-radius:999px!important;
+    border:2px solid rgba(250,248,244,.75)!important;
+  }
+  .section{
+    width:100%!important;
+    max-width:100%!important;
+  }
+  .section.active{
+    display:block!important;
+    padding-bottom:120px!important;
+  }
+  .sec-footer{
+    margin-bottom:32px!important;
+  }
+}
+@media (max-width:420px){
+  @media (max-width:720px){
+    main{padding-bottom:calc(150px + env(safe-area-inset-bottom,0px))!important;}
+    nav{height:72px!important;min-height:72px!important;max-height:72px!important;}
+  }
+}
+
 </style>
 
   <!-- PWA -->
   <meta name="theme-color" content="#221e1a"/>
-  <meta name="pwa-build" content="mobile-premium-v5"/>
+  <meta name="pwa-build" content="v13-mobile-scroll-bar-fix"/>
   <meta name="mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
