@@ -852,7 +852,7 @@ main{
   <!-- Icons padrão PWA: opção 5 -->
   <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-192x192.png"/>
   <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180x180.png"/>
-  <link rel="manifest" href="manifest.webmanifest"/>
+  <link rel="manifest" href="./manifest.json"/>
 </head>
 <body>
 
@@ -1535,6 +1535,7 @@ updateProgress();
       if(registration.waiting){
         registration.waiting.postMessage({type:'SKIP_WAITING'});
       }
+      await navigator.serviceWorker.ready;
     }catch(err){
       console.warn('Service Worker não registrado:', err);
     }
@@ -1544,22 +1545,24 @@ updateProgress();
     event.preventDefault();
     deferredPrompt = event;
     if(installBtn) installBtn.style.display = 'flex';
+    document.documentElement.classList.add('pwa-install-ready');
   });
 
   window.addEventListener('appinstalled', () => {
     deferredPrompt = null;
     if(installBtn) installBtn.style.display = 'none';
+    document.documentElement.classList.add('pwa-installed');
   });
 
   window.installPWA = async function(){
-    if(!deferredPrompt){
-      alert('Para instalar: abra no Chrome/Edge, toque no menu do navegador e escolha “Instalar app”.');
+    if(deferredPrompt){
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      if(installBtn) installBtn.style.display = 'none';
       return;
     }
-    deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    deferredPrompt = null;
-    if(installBtn) installBtn.style.display = 'none';
+    alert('Se aparecer apenas “Adicionar atalho”, feche esta aba, limpe o cache do site e abra novamente pelo endereço HTTPS do GitHub Pages. O PWA precisa estar com manifest.json e sw.js publicados na mesma pasta do index.html.');
   };
 
   registerServiceWorker();
