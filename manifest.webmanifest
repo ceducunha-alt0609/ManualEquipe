@@ -3,7 +3,7 @@
   "short_name": "Manual Equipe",
   "description": "Manual operacional da equipe em formato PWA.",
   "id": "./index.html",
-  "start_url": "./index.html?source=pwa-v12",
+  "start_url": "./index.html?source=pwa-v14",
   "scope": "./",
   "display": "standalone",
   "background_color": "#221e1a",
