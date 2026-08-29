@@ -1,4 +1,4 @@
-const CACHE_NAME = 'manual-equipe-pwa-v13-audit-integrity';
+const CACHE_NAME = 'manual-equipe-pwa-v14-clean-nav';
 const APP_SHELL = [
   './',
   './index.html',
