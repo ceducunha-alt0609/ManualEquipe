@@ -19,8 +19,13 @@
   window.__PWA_DIAG__ = { started: Date.now(), swRegistered:false, swReady:false, error:null };
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function(){
-      navigator.serviceWorker.register('./sw.js?v=11', { scope: './' })
-        .then(function(reg){ window.__PWA_DIAG__.swRegistered = true; window.__PWA_DIAG__.scope = reg.scope; return navigator.serviceWorker.ready; })
+      navigator.serviceWorker.register('./sw.js?v=13', { scope: './' })
+        .then(function(reg){
+          window.__PWA_DIAG__.swRegistered = true;
+          window.__PWA_DIAG__.scope = reg.scope;
+          if(reg.waiting) reg.waiting.postMessage({type:'SKIP_WAITING'});
+          return navigator.serviceWorker.ready;
+        })
         .then(function(){ window.__PWA_DIAG__.swReady = true; })
         .catch(function(err){ window.__PWA_DIAG__.error = String(err && err.message ? err.message : err); });
     });
@@ -1591,7 +1596,12 @@ main{
 <script>
 const navItems = document.querySelectorAll('.nav-item');
 const sections = document.querySelectorAll('.section');
-const readState = {};
+const READ_STATE_KEY = 'manualequipe.readState';
+let readState = {};
+try {
+  const savedReadState = JSON.parse(localStorage.getItem(READ_STATE_KEY) || '{}');
+  if(savedReadState && typeof savedReadState === 'object' && !Array.isArray(savedReadState)) readState = savedReadState;
+} catch(e) {}
 
 navItems.forEach(item => {
   item.addEventListener('click', () => {
@@ -1629,10 +1639,19 @@ document.querySelectorAll('.btn-read').forEach(btn => {
       btn.classList.remove('done');
       navItem && navItem.classList.remove('read-done');
     }
+    try { localStorage.setItem(READ_STATE_KEY, JSON.stringify(readState)); } catch(e) {}
     updateProgress();
   });
 });
 
+document.querySelectorAll('.btn-read').forEach(btn => {
+  const key = btn.getAttribute('data-key');
+  if(!readState[key]) return;
+  btn.textContent = '✓ Lida';
+  btn.classList.add('done');
+  const navItem = document.querySelector('[data-section="' + key + '"]');
+  navItem && navItem.classList.add('read-done');
+});
 updateProgress();
 </script>
 
@@ -1641,18 +1660,6 @@ updateProgress();
   const installBtn = document.getElementById('btn-install');
   let deferredPrompt = null;
 
-  async function registerServiceWorker(){
-    if(!('serviceWorker' in navigator)) return;
-    try{
-      const registration = await navigator.serviceWorker.register('./sw.js?v=8', { scope: './' });
-      if(registration.waiting){
-        registration.waiting.postMessage({type:'SKIP_WAITING'});
-      }
-      await navigator.serviceWorker.ready;
-    }catch(err){
-      console.warn('Service Worker não registrado:', err);
-    }
-  }
 
   window.addEventListener('beforeinstallprompt', (event) => {
     event.preventDefault();
@@ -1678,7 +1685,6 @@ updateProgress();
     alert('Se aparecer apenas “Adicionar atalho”, feche esta aba, limpe o cache do site e abra novamente pelo endereço HTTPS do GitHub Pages. O PWA precisa estar com manifest.json e sw.js publicados na mesma pasta do index.html.');
   };
 
-  registerServiceWorker();
 })();
 </script>
 
